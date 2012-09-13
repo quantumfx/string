@@ -3,6 +3,8 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
+#include <sstream>
 #include <cmath>
 #include <boost/assign/std/vector.hpp>
 #include "main.h"
@@ -58,13 +60,37 @@ int main()
     placeString(pos_test, ori_test, 1000.0, 15.0, 0.0, 0.57735, windowsize, z_size, skyBox);
 
 //    cout << skyBox.size() << "x" << skyBox[0].size() << "x" <<  skyBox[0][0].size() << endl;
-    for (vecsize i = 0; i < windowsize; ++i)
+/*    for (vecsize i = 0; i < windowsize; ++i)
         for (vecsize j = 0; j < windowsize; ++j)
             for (vecsize k = 0; k < z_size; ++k)
             {
-                cout << i << " " << j << " " << k << " " << skyBox[i][j][k] << endl;
+                cout << i << "," << j << "," << k << "," << skyBox[i][j][k] << endl;
             }
+*/
+    cout << "# vtk DataFile Version 2.0" << endl;
+    cout << "Comment goes here" << endl;
+    cout << "ASCII" << endl << endl;
 
+    cout << "DATASET STRUCTURED_POINTS" << endl;
+    cout << "DIMENSIONS    " << windowsize << "    " << windowsize << "    " << z_size << endl << endl;
+
+    cout << "ORIGIN    " << "0.000" << "    " << "0.000" << "    " << "0.000" << endl;
+    cout << "SPACING    " << "1.000" << "    " << "1.000" << "    " << "1.000" << endl << endl;
+
+    cout << "POINT_DATA    " << windowsize * windowsize * z_size << endl;
+    cout << "SCALARS scalars float" << endl;
+    cout << "LOOKUP_TABLE default" << endl << endl;
+ 
+    for (vecsize k = 0; k < z_size; ++k)
+        for (vecsize i = 0; i < windowsize; ++i)
+        {
+            for (vecsize j = 0; j < windowsize; ++j)
+            {
+                cout << skyBox[i][j][k] << " ";
+            }
+            cout << endl;
+        }
+    
     return 0;
 }
 
