@@ -3,14 +3,17 @@ CFLAGS = -c -Wall
 
 all: string
 
-string: main.o vecop.o
-	$(CC) main.o vecop.o -o string
+string: main.o vecop.o savevtk.o
+	$(CC) main.o vecop.o savevtk.o -o string
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c main.cpp
 
 vecop.o: vecop.cpp
 	$(CC) $(CFLAGS) -c vecop.cpp
+
+savevtk.o: savevtk.cpp
+	$(CC) $(CFLAGS) -c savevtk.cpp
 
 clean:
 	rm -rf *.o string
