@@ -16,4 +16,4 @@ savevtk.o: savevtk.cpp
 	$(CC) $(CFLAGS) -c savevtk.cpp
 
 clean:
-	rm -rf *.o string
+	rm -rf *.o string data.vtk

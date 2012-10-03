@@ -12,3 +12,5 @@
 *.a
 
 string
+data.vtk
+vtest

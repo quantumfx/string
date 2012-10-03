@@ -15,5 +15,6 @@ vec normalize (vec);
 vec project_angular (vec);
 vec project_z (vec);
 vec multiply (double, vec);
+vec rotate_xy (double, vec);
 
 #endif

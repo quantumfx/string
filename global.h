@@ -4,7 +4,7 @@
 
 typedef std::vector<std::vector<std::vector<double> > >::size_type vecsize;
 
-void placeString(const vec&, vec&, double, double, double, double,
+void placeString(const vec&, const vec&, double, double, double, double,
 const vecsize&, const vecsize&, std::vector<std::vector<std::vector<double> > >&);
 
 double brightnessTemp(double, double, double, double, double, double, double, double);

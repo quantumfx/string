@@ -53,13 +53,16 @@ int main()
     vec ori_test;
     pos_test.x = windowsize / 2;
     pos_test.y = windowsize / 2;
-    pos_test.z = z_size / 2;
-    ori_test.x = 0;
-    ori_test.y = 1;
+    pos_test.z = z_size / 3;
+    ori_test.x = 1;
+    ori_test.y = 0;
     ori_test.z = 0;
 
+    for(int i=0; i<6; i++)
+    {
     placeString(pos_test, ori_test, 1000.0, 15.0, 0.0, 0.57735, windowsize, z_size, skyBox);
-
+    ori_test = rotate_xy(PI/6, ori_test);
+    }
 
 //    cout << skyBox.size() << "x" << skyBox[0].size() << "x" <<  skyBox[0][0].size() << endl;
 /*    for (vecsize i = 0; i < windowsize; ++i)
@@ -75,42 +78,47 @@ int main()
     return 0;
 }
 
-void placeString(const vec& position, vec& string_par, double z_i, double z, double t_i, double vsgs,
+
+/* Confusing z in vec.z (can represent z-direction in R^3 or redshift direction) */
+void placeString(const vec& position, const vec& orientation, double z_i, double z, double t_i, double vsgs,
 const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> > >& skyBox)
 {
 //    double length = t_i;
 //    double width = t_i * vsgs;
 //    double thickness = t_i * 4 * PI * GMU * vsgs;
-    
+   
+   vec string_par = orientation;
+/* This should be randomized in a direction perpendicular to string_par */
+
     vec string_perp;
-    string_perp.x = 1;
-    string_perp.y = 0;
-    string_perp.z = 0;
+
+/* temporary, string_perp needs to be random */
+    string_perp = rotate_xy(PI/2, string_par);
 
     vec string_thick = cross(string_par, string_perp);
 
-    normalize(string_par);
-    normalize(string_perp);
-    normalize(string_thick);
+    string_par = normalize(string_par);
+    string_perp = normalize(string_perp);
+    string_thick = normalize(string_thick);
 
     double theta_par = 1 / sqrt(z_i + 1) * 90 * 3600 / ANG_RES;
     double theta_perp = 1 / sqrt(z_i + 1) * vsgs * 90 * 3600 / ANG_RES;
     double thickness_z = ceil(8 / 3 * PI *GMU * vsgs * sqrt(z_i + 1) * pow (1 + z, -1.5) * 86 / 10);
 
-    multiply(theta_par, string_par);
-    multiply(theta_perp, string_perp);
-    multiply(thickness_z, string_thick);
+    string_par = multiply(theta_par, string_par);
+    string_perp = multiply(theta_perp, string_perp);
+    string_thick = multiply(thickness_z, string_thick);
 
-    project_angular(string_par);
-    project_angular(string_perp);
-    project_z(string_thick);
+    string_par = project_angular(string_par);
+    string_perp = project_angular(string_perp);
+    string_thick = project_z(string_thick);
 
-    vec jhat;
-    jhat.x = 0;
-    jhat.y = 1;
-    jhat.z = 0;
+    vec ihat;
+    ihat.x = 1;
+    ihat.y = 0;
+    ihat.z = 0;
 
-    double axis_angle = fmod(acos(dot(jhat,string_par) / norm(jhat) / norm(string_par)), PI/2);
+    double axis_angle = acos(dot(ihat,string_par) / norm(ihat) / norm(string_par));
     double rot_x;
     double rot_y;
     double norm_par = norm(string_par);
@@ -123,9 +131,9 @@ const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> >
             {
                 rot_x = i * cos(axis_angle) - j * sin(axis_angle);
                 rot_y = i * sin(axis_angle) + j * cos(axis_angle);
-                if ((rot_x >= -norm_par) && (rot_x <= norm_par) &&
-                    (rot_y >= -norm_perp) && (rot_y <= norm_perp) &&
-                    (k >= -norm_z) && (k <= norm_z))
+                if ((rot_x >= position.x) && (rot_x <= position.x + norm_par) &&
+                    (rot_y >= position.y) && (rot_y <= position.y + norm_perp) &&
+                    (k >= position.z) && (k <= position.z + norm_z))
 
                     skyBox[i][j][k] += brightnessTemp(1.9e-7 * pow((1 + z), 3), 2.7e-11, 2.85e-15, 0.068, 2.7315,
                     1000.0, 15.0, 0.57735);
