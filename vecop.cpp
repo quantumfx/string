@@ -90,8 +90,8 @@ vec rotate_xy(double theta, vec in)
 {
     vec out;
 
-    out.x = in.x * cos(theta) - in.y * sin(theta);
-    out.y = in.x * sin(theta) + in.y * cos(theta);
+    out.x = in.x * cos(theta) + in.y * sin(theta);
+    out.y = in.x * -sin(theta) + in.y * cos(theta);
     out.z = in.z;
 
     return out;

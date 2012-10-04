@@ -51,8 +51,8 @@ int main()
 
     vec pos_test;
     vec ori_test;
-    pos_test.x = windowsize / 2;
-    pos_test.y = windowsize / 2;
+    pos_test.x = 2 * windowsize / 5;
+    pos_test.y = 2 * windowsize / 5;
     pos_test.z = z_size / 3;
     ori_test.x = 1;
     ori_test.y = 0;
@@ -118,9 +118,16 @@ const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> >
     ihat.y = 0;
     ihat.z = 0;
 
+    vec jhat;
+    jhat.x = 0;
+    jhat.y = 1;
+    jhat.z = 0;
+
     double axis_angle = acos(dot(ihat,string_par) / norm(ihat) / norm(string_par));
     double rot_x;
     double rot_y;
+    vec rot_pos = rotate_xy(-axis_angle, position);
+
     double norm_par = norm(string_par);
     double norm_perp = norm(string_perp);
     double norm_z = norm(string_thick);
@@ -129,8 +136,26 @@ const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> >
         for (vecsize j = 0; j < windowsize; ++j)
             for (vecsize k = 0; k < z_size; ++k)
             {
-                rot_x = i * cos(axis_angle) - j * sin(axis_angle);
-                rot_y = i * sin(axis_angle) + j * cos(axis_angle);
+                rot_x = i * cos(axis_angle) + j * sin(axis_angle);
+                rot_y = i * -sin(axis_angle) + j * cos(axis_angle);
+                if ((rot_x >= rot_pos.x) && (rot_x <= rot_pos.x + norm_par) &&
+                    (rot_y >= rot_pos.y) && (rot_y <= rot_pos.y + norm_perp) &&
+                    (k >= rot_pos.z) && (k <= rot_pos.z + norm_z))
+
+                    skyBox[i][j][k] += brightnessTemp(1.9e-7 * pow((1 + z), 3), 2.7e-11, 2.85e-15, 0.068, 2.7315,
+                    1000.0, 15.0, 0.57735);
+            }
+    /*
+    double norm_par = norm(string_par);
+    double norm_perp = norm(string_perp);
+    double norm_z = norm(string_thick);
+
+    for (vecsize i = 0; i < windowsize; ++i)
+        for (vecsize j = 0; j < windowsize; ++j)
+            for (vecsize k = 0; k < z_size; ++k)
+            {
+                rot_x = i * cos_angle + j * sin_angle;
+                rot_y = i * -sin_angle + j * cos_angle;
                 if ((rot_x >= position.x) && (rot_x <= position.x + norm_par) &&
                     (rot_y >= position.y) && (rot_y <= position.y + norm_perp) &&
                     (k >= position.z) && (k <= position.z + norm_z))
@@ -138,7 +163,7 @@ const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> >
                     skyBox[i][j][k] += brightnessTemp(1.9e-7 * pow((1 + z), 3), 2.7e-11, 2.85e-15, 0.068, 2.7315,
                     1000.0, 15.0, 0.57735);
             }
-
+*/
 //    cout << theta_l << "x" << theta_w << "x" << thickness_z << endl;
 }
 
