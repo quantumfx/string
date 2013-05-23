@@ -86,13 +86,21 @@ vec multiply(double a, vec in)
     return out;
 }
 
-vec rotate_xy(double theta, vec in)
+vec rotate_xy(double theta, vec in, vec origin)
 {
     vec out;
 
-    out.x = in.x * cos(theta) + in.y * sin(theta);
-    out.y = in.x * -sin(theta) + in.y * cos(theta);
+    out.x = in.x - origin.x;
+    out.y = in.y - origin.y;
+    double x, y;
+    x = out.x * cos(theta) + out.y * -sin(theta);
+    y = out.x * sin(theta) + out.y * cos(theta);
+    out.x = x;
+    out.y = y;
     out.z = in.z;
+    
+    out.x += origin.x;
+    out.y += origin.y;
 
     return out;
 }

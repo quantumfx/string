@@ -15,5 +15,11 @@ vecop.o: vecop.cpp
 savevtk.o: savevtk.cpp
 	$(CC) $(CFLAGS) -c savevtk.cpp
 
+test.o: test.cpp
+	$(CC) $(CFLAGS) -c test.cpp
+
+test: test.o vecop.o
+	$(CC) vecop.o test.o -o test
+
 clean:
-	rm -rf *.o string data.vtk
+	rm -rf *.o string data.vtk test

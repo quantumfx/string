@@ -6,12 +6,12 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
-#include <boost/assign/std/vector.hpp>
+//#include <boost/assign/std/vector.hpp>
 #include "global.h"
 #include "vecop.h"
 #include "savevtk.h"
 
-using namespace boost::assign;
+//using namespace boost::assign;
 using namespace std;
 
 #define ANG_RES 600 // angular resolution in arcsec
@@ -22,9 +22,11 @@ using namespace std;
 
 int main()
 {
-    // Create an empty 3D vector
+    // Create an empty 3D vector, vecsize is the size of a 3D vector define in global.h
     vector<vector<vector<double> > > skyBox;
     const vecsize windowsize = SKY_SIZE * 3600 / ANG_RES;
+
+/* this is to define the size of skyBox in the redshift direction */
 
     double z_1 = 10;
     double z_2 = 20;
@@ -49,6 +51,8 @@ int main()
         }
     }
 
+/* test strings */
+// make a constructor
     vec pos_test;
     vec ori_test;
     pos_test.x = 2 * windowsize / 5;
@@ -58,10 +62,9 @@ int main()
     ori_test.y = 0;
     ori_test.z = 0;
 
-    for(int i=0; i<6; i++)
-    {
-    placeString(pos_test, ori_test, 1000.0, 15.0, 0.0, 0.57735, windowsize, z_size, skyBox);
-    ori_test = rotate_xy(PI/6, ori_test);
+    for(int i=0; i<6; i++) {
+        placeString(pos_test, ori_test, 1000.0, 15.0, 0.0, 0.57735, windowsize, z_size, skyBox);
+        ori_test = rotate_xy(PI/6, ori_test, pos_test);
     }
 
 //    cout << skyBox.size() << "x" << skyBox[0].size() << "x" <<  skyBox[0][0].size() << endl;
@@ -72,7 +75,7 @@ int main()
                 cout << i << "," << j << "," << k << "," << skyBox[i][j][k] << endl;
             }
 */
-
+/* this saves the data into a vtk file */
     savevtk(windowsize, windowsize, z_size, skyBox);
     
     return 0;
@@ -80,20 +83,21 @@ int main()
 
 
 /* Confusing z in vec.z (can represent z-direction in R^3 or redshift direction) */
-void placeString(const vec& position, const vec& orientation, double z_i, double z, double t_i, double vsgs,
-const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> > >& skyBox)
+/* C++ note: say bla is a variable, then &bla gives you the address.  */
+void placeString(const vec &position, const vec &orientation, double z_i, double z, double t_i, double vsgs,
+const vecsize &windowsize, const vecsize &z_size, vector<vector<vector<double> > > &skyBox)
 {
 //    double length = t_i;
 //    double width = t_i * vsgs;
 //    double thickness = t_i * 4 * PI * GMU * vsgs;
    
-   vec string_par = orientation;
+    vec string_par = orientation;
 /* This should be randomized in a direction perpendicular to string_par */
 
     vec string_perp;
 
 /* temporary, string_perp needs to be random */
-    string_perp = rotate_xy(PI/2, string_par);
+    string_perp = rotate_xy(PI/2, string_par, position);
 
     vec string_thick = cross(string_par, string_perp);
 
@@ -123,28 +127,32 @@ const vecsize& windowsize, const vecsize& z_size, vector<vector<vector<double> >
     jhat.y = 1;
     jhat.z = 0;
 
+    vec zerovec;
+    zerovec.x = 0;
+    zerovec.y = 0;
+    zerovec.z = 0;
+
     double axis_angle = acos(dot(ihat,string_par) / norm(ihat) / norm(string_par));
     double rot_x;
     double rot_y;
-    vec rot_pos = rotate_xy(-axis_angle, position);
+    vec rot_pos = rotate_xy(-axis_angle, position, position);
 
     double norm_par = norm(string_par);
     double norm_perp = norm(string_perp);
     double norm_z = norm(string_thick);
-
+    // start and end points to the corners of the box
     for (vecsize i = 0; i < windowsize; ++i)
-        for (vecsize j = 0; j < windowsize; ++j)
-            for (vecsize k = 0; k < z_size; ++k)
-            {
-                rot_x = i * cos(axis_angle) + j * sin(axis_angle);
-                rot_y = i * -sin(axis_angle) + j * cos(axis_angle);
+        for (vecsize j = 0; j < windowsize; ++j) {
+                rot_x = i * cos(axis_angle) + j * -sin(axis_angle);
+                rot_y = i * sin(axis_angle) + j * cos(axis_angle);
                 if ((rot_x >= rot_pos.x) && (rot_x <= rot_pos.x + norm_par) &&
-                    (rot_y >= rot_pos.y) && (rot_y <= rot_pos.y + norm_perp) &&
-                    (k >= rot_pos.z) && (k <= rot_pos.z + norm_z))
-
-                    skyBox[i][j][k] += brightnessTemp(1.9e-7 * pow((1 + z), 3), 2.7e-11, 2.85e-15, 0.068, 2.7315,
-                    1000.0, 15.0, 0.57735);
+                    (rot_y >= rot_pos.y) && (rot_y <= rot_pos.y + norm_perp) ) {
+//                        printf("x: %f, y: %f\n", rot_x, rot_y);
+                        for (vecsize k = rot_pos.z; k < rot_pos.z + norm_z; ++k) {
+                            skyBox[i][j][k] += brightnessTemp(1.9e-7 * pow((1 + z), 3), 2.7e-11, 2.85e-15, 0.068, 2.7315,
+                            1000.0, 15.0, 0.57735);
             }
+        }}
     /*
     double norm_par = norm(string_par);
     double norm_perp = norm(string_perp);
