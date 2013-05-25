@@ -62,10 +62,11 @@ int main()
     ori_test.y = 0;
     ori_test.z = 0;
 
-    for(int i=0; i<6; i++) {
+//    for(int i=0; i<6; i++) {
         placeString(pos_test, ori_test, 1000.0, 15.0, 0.0, 0.57735, windowsize, z_size, skyBox);
-        ori_test = rotate_xy(PI/6, ori_test, pos_test);
-    }
+//        ori_test = rotate_xy(PI/6, ori_test, pos_test);
+//    }
+      placeString(pos_test,rotate_xy(PI/3,ori_test,pos_test), 1000.0, 15.0, 0.0, 0.57735, windowsize, z_size, skyBox);
 
 //    cout << skyBox.size() << "x" << skyBox[0].size() << "x" <<  skyBox[0][0].size() << endl;
 /*    for (vecsize i = 0; i < windowsize; ++i)
@@ -105,6 +106,7 @@ const vecsize &windowsize, const vecsize &z_size, vector<vector<vector<double> >
     string_perp = normalize(string_perp);
     string_thick = normalize(string_thick);
 
+    /* These are for calculating the angular and z-size of the string */
     double theta_par = 1 / sqrt(z_i + 1) * 90 * 3600 / ANG_RES;
     double theta_perp = 1 / sqrt(z_i + 1) * vsgs * 90 * 3600 / ANG_RES;
     double thickness_z = ceil(8 / 3 * PI *GMU * vsgs * sqrt(z_i + 1) * pow (1 + z, -1.5) * 86 / 10);
@@ -131,11 +133,10 @@ const vecsize &windowsize, const vecsize &z_size, vector<vector<vector<double> >
     zerovec.x = 0;
     zerovec.y = 0;
     zerovec.z = 0;
-
     double axis_angle = acos(dot(ihat,string_par) / norm(ihat) / norm(string_par));
     double rot_x;
     double rot_y;
-    vec rot_pos = rotate_xy(-axis_angle, position, position);
+    vec rot_pos = rotate_xy(-axis_angle, position, zerovec);
 
     double norm_par = norm(string_par);
     double norm_perp = norm(string_perp);
@@ -151,9 +152,10 @@ const vecsize &windowsize, const vecsize &z_size, vector<vector<vector<double> >
                         for (vecsize k = rot_pos.z; k < rot_pos.z + norm_z; ++k) {
                             skyBox[i][j][k] += brightnessTemp(1.9e-7 * pow((1 + z), 3), 2.7e-11, 2.85e-15, 0.068, 2.7315,
                             1000.0, 15.0, 0.57735);
-            }
-        }}
-    /*
+                        }
+                }
+        }
+        /*
     double norm_par = norm(string_par);
     double norm_perp = norm(string_perp);
     double norm_z = norm(string_thick);
