@@ -136,7 +136,7 @@ const vecsize &windowsize, const vecsize &z_size, vector<vector<vector<double> >
     double axis_angle = acos(dot(ihat,string_par) / norm(ihat) / norm(string_par));
     double rot_x;
     double rot_y;
-    vec rot_pos = rotate_xy(-axis_angle, position, zerovec);
+    vec rot_pos = rotate_xy(axis_angle, position, zerovec);
 
     double norm_par = norm(string_par);
     double norm_perp = norm(string_perp);
